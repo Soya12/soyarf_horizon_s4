@@ -1,0 +1,72 @@
+// C++ code
+//
+#define motorA 5
+#define motorB 6
+int encoderPin1 = 2;
+int encoderPin2 = 3;
+volatile int lastEncoded = 0;
+volatile long encoderValue = 0;
+ int pulsePerRevolution=360;
+long lastencoderValue = 0;
+int lastMSB=0;
+int lastLSB=0;
+int degree;
+int start_degree;
+int total_degree=0;
+bool moving = true;
+void setup()
+{  Serial.begin(9600);
+   Serial.println("enter degree:");
+
+ 
+  pinMode(encoderPin1, INPUT);
+  pinMode(encoderPin2, INPUT);
+  digitalWrite(encoderPin1, HIGH); //turn pullup resistor on
+  digitalWrite(encoderPin2, HIGH); 
+  attachInterrupt(digitalPinToInterrupt(encoderPin1), updateEncoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(encoderPin2), updateEncoder, CHANGE);
+ 
+  
+  
+   pinMode(motorA,OUTPUT);
+   pinMode(motorB,OUTPUT);
+}
+
+void loop()
+{ 
+  start_degree=(encoderValue*360)/pulsePerRevolution;
+    
+  if(Serial.available()>0)
+  { degree= Serial.parseInt();
+  
+   
+   total_degree=start_degree+degree;
+    Serial.println("rotating to "+ String(total_degree));
+     moving=true;}
+ 
+  while(moving)
+        { start_degree = (encoderValue * 360) / pulsePerRevolution;
+  if(start_degree<total_degree)
+  {  analogWrite(motorA,200);
+    digitalWrite(motorB,LOW);
+    moving=true;}
+ else if (start_degree > total_degree) {
+        analogWrite(motorA, 200);
+        digitalWrite(motorB, HIGH);
+         moving= true;
+    } else if(start_degree==total_degree) {
+        analogWrite(motorA, 0);
+        moving=false;
+ }}
+  }
+void updateEncoder() {
+    int MSB = digitalRead(encoderPin1);
+    int LSB = digitalRead(encoderPin2);
+    int encoded = (MSB << 1) | LSB;
+    int sum  = (lastEncoded << 2) | encoded;
+
+    if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) encoderValue++;
+    if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) encoderValue--;
+
+    lastEncoded = encoded;
+}
