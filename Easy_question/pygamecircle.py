@@ -61,7 +61,7 @@ while run:
     if event.type==pygame.MOUSEBUTTONDOWN:
         if event.button==3 and pos1:
             pygame.draw.circle(win,(255,255,255),pos1,rad)
-            pygame.draw.line(win,(255,255,255),pos1,pos,2)
+        
             pygame.display.update()   
                 
 
@@ -70,7 +70,7 @@ while run:
         win.fill((255,255,255))
         pygame.display.update()
     if keys[pygame.K_s]:
-        pygame.image.save(win, "C:\Users\user\OneDrive\Desktop\circle.png")
+        pygame.image.save(win, "C:/Users/user/OneDrive/Desktop/circle.png")
         print("saved")
                 
 
